@@ -11,9 +11,13 @@ import os
 
 parser = argparse.ArgumentParser(description='tesseract ocr test')
 parser.add_argument('image', help='image path')
+parser.add_argument('-d', '--debug', action='store_true',
+                    help='save debug images')
+
 args = parser.parse_args()
 
 IMAGE_PATH = args.image
+DEBUG = args.debug
 
 TESSERACT_PATH = r'C:\Program Files\Tesseract-OCR'  # インストールしたTesseract-OCRのpath
 TESSDATA_PATH = r'C:\Program Files\Tesseract-OCR\tessdata'  # tessdataのpath
@@ -41,6 +45,7 @@ for d in res:
     print(d.content)
     print(d.position)
     cv2.rectangle(out, d.position[0], d.position[1], (0, 0, 255), 2)
+    # TODO save line box images
 
 cv2.imshow('image', out)
 cv2.waitKey(0)
