@@ -6,12 +6,35 @@ import argparse
 import cv2
 from PIL import Image
 
+import tensorflow as tf
+import numpy as np
+
 import sys
 import os
 
 DEBUG_IMAGES_DIR = 'debug_images'
 
 os.makedirs(DEBUG_IMAGES_DIR, exist_ok=True)
+
+# https://ja.wikipedia.org/wiki/Shift_JIS#%E5%8C%BA%E7%82%B9%E7%95%AA%E5%8F%B7%E3%81%8B%E3%82%89%E3%81%AE%E5%A4%89%E6%8F%9B
+
+
+def s1(k, t):
+    if 1 <= k <= 62:
+        return (k+257)//2
+    if 63 <= k <= 94:
+        return (k+385)//2
+
+
+def s2(k, t):
+    if k % 2 == 1:
+        if 1 <= t <= 63:
+            return t+63
+        if 64 <= t <= 94:
+            return t+64
+    else:
+        return t+158
+
 
 parser = argparse.ArgumentParser(description='tesseract ocr test')
 parser.add_argument('image', help='image path')
@@ -44,8 +67,8 @@ res = tool.image_to_string(Image.open(IMAGE_PATH),
                            builder=pyocr.builders.LineBoxBuilder(tesseract_layout=6))
 
 # draw result
-img = cv2.imread(IMAGE_PATH)
-img_out = img.copy()
+img = cv2.imread(IMAGE_PATH, cv2.IMREAD_GRAYSCALE)
+img_out = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 img_lines = []
 for i, d in enumerate(res, 1):
     print(d.content)
@@ -54,10 +77,64 @@ for i, d in enumerate(res, 1):
     cv2.rectangle(img_out, pos[0], pos[1], (0, 0, 255), 2)
     img_crop = img[pos[0][1]:pos[1][1], pos[0][0]:pos[1][0]]
     img_lines.append(img_crop)
-    cv2.imwrite(os.path.join(DEBUG_IMAGES_DIR, 'line_%d.png' % i), img_crop)
+    if DEBUG:
+        cv2.imwrite(os.path.join(DEBUG_IMAGES_DIR,
+                    'line_%d.png' % i), img_crop)
 
-cv2.imwrite(os.path.join(DEBUG_IMAGES_DIR, 'line_boxes.png'),  img_out)
+model = tf.keras.models.load_model(
+    r"D:\Downloads\cnn\saved_model_kuten_1000")
 
-cv2.imshow('image', img_out)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+for l, img_line in enumerate(img_lines, 1):
+    h, w = img_line.shape
+    _, img_th = cv2.threshold(img_line, -1, 255, cv2.THRESH_OTSU)
+    img_boxes = []
+    start = 0
+    for x in range(w):
+        if np.count_nonzero(img_th[:, x] == 0) == 0 or x-start >= h:
+            end = x
+            if end-start < h//3:
+                start = x
+                continue
+            img_box = img_line[:, start:end]
+            img_boxes.append(img_box)
+            start = x
+
+    for c, img_box in enumerate(img_boxes, 1):
+        if DEBUG:
+            cv2.imwrite(os.path.join(DEBUG_IMAGES_DIR,
+                                     'char_%d_%d.png' % (l, c)), img_box)
+
+        img = cv2.copyMakeBorder(
+            img_box, 0, 0, 0, img_box.shape[0]-img_box.shape[1], cv2.BORDER_CONSTANT, value=255)
+        # cv2.imshow(str(c), img)
+        img = cv2.bitwise_not(img)
+        img = cv2.resize(img, (28, 28))
+
+        X = (img.astype(np.float32)/255).reshape(1, 1, 28, 28)
+        y = model(Input=X)
+        # kuten = np.argmax(y)
+        ss = []
+        for kuten in np.argsort(y[0][0])[-10:]:
+            k, t = kuten//100, kuten % 100
+            s = bytearray([s1(k, t), s2(k, t)]).decode('cp932')
+            ss.append(s)
+        print(ss)
+
+    #     print(s, end='')
+    # print()
+
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+
+if DEBUG:
+    cv2.imwrite(os.path.join(DEBUG_IMAGES_DIR, 'line_boxes.png'),  img_out)
+
+# cv2.imshow('image', img_out)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+
+
+# model = tf.keras.models.load_model(
+#     r"D:\Downloads\cnn\saved_model_kuten_1000\saved_model.pb")
+
+# y = model(Input=X)
