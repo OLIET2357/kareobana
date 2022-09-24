@@ -9,6 +9,10 @@ from PIL import Image
 import sys
 import os
 
+DEBUG_IMAGES_DIR = 'debug_images'
+
+os.makedirs(DEBUG_IMAGES_DIR, exist_ok=True)
+
 parser = argparse.ArgumentParser(description='tesseract ocr test')
 parser.add_argument('image', help='image path')
 parser.add_argument('-d', '--debug', action='store_true',
@@ -46,6 +50,8 @@ for d in res:
     print(d.position)
     cv2.rectangle(out, d.position[0], d.position[1], (0, 0, 255), 2)
     # TODO save line box images
+
+cv2.imwrite(os.path.join(DEBUG_IMAGES_DIR, 'line_boxes.png'),  out)
 
 cv2.imshow('image', out)
 cv2.waitKey(0)
