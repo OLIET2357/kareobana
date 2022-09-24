@@ -13,6 +13,8 @@ parser = argparse.ArgumentParser(description='tesseract ocr test')
 parser.add_argument('image', help='image path')
 args = parser.parse_args()
 
+IMAGE_PATH = args.image
+
 TESSERACT_PATH = r'C:\Program Files\Tesseract-OCR'  # インストールしたTesseract-OCRのpath
 TESSDATA_PATH = r'C:\Program Files\Tesseract-OCR\tessdata'  # tessdataのpath
 
@@ -29,12 +31,12 @@ if len(tools) == 0:
 tool = tools[0]
 
 
-res = tool.image_to_string(Image.open(args.image),
+res = tool.image_to_string(Image.open(IMAGE_PATH),
                            lang="jpn",
                            builder=pyocr.builders.LineBoxBuilder(tesseract_layout=6))
 
 # draw result
-out = cv2.imread(args.image)
+out = cv2.imread(IMAGE_PATH)
 for d in res:
     print(d.content)
     print(d.position)
