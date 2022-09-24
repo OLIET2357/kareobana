@@ -1,4 +1,4 @@
-# https://qiita.com/bohemian916/items/67f22ee7aeac103dd205#linebox
+# https://qiita.com/bohemian916/items/67f22ee7aeac103dd205#wordbox
 
 import pyocr
 import pyocr.builders
@@ -44,15 +44,20 @@ res = tool.image_to_string(Image.open(IMAGE_PATH),
                            builder=pyocr.builders.LineBoxBuilder(tesseract_layout=6))
 
 # draw result
-out = cv2.imread(IMAGE_PATH)
-for d in res:
+img = cv2.imread(IMAGE_PATH)
+img_out = img.copy()
+img_lines = []
+for i, d in enumerate(res, 1):
     print(d.content)
     print(d.position)
-    cv2.rectangle(out, d.position[0], d.position[1], (0, 0, 255), 2)
-    # TODO save line box images
+    pos = d.position
+    cv2.rectangle(img_out, pos[0], pos[1], (0, 0, 255), 2)
+    img_crop = img[pos[0][1]:pos[1][1], pos[0][0]:pos[1][0]]
+    img_lines.append(img_crop)
+    cv2.imwrite(os.path.join(DEBUG_IMAGES_DIR, 'line_%d.png' % i), img_crop)
 
-cv2.imwrite(os.path.join(DEBUG_IMAGES_DIR, 'line_boxes.png'),  out)
+cv2.imwrite(os.path.join(DEBUG_IMAGES_DIR, 'line_boxes.png'),  img_out)
 
-cv2.imshow('image', out)
+cv2.imshow('image', img_out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
