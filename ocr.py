@@ -90,10 +90,10 @@ for l, img_line in enumerate(img_lines, 1):
     _, img_th = cv2.threshold(img_line, -1, 255, cv2.THRESH_OTSU)
     img_boxes = []
     start = 0
-    for x in range(w):
-        if np.count_nonzero(img_th[:, x] == 0) == 0 or x-start >= h:
+    for x in range(w+1):
+        if x == w or np.count_nonzero(img_th[:, x] == 0) == 0 or x-start >= h:
             end = x
-            if end-start < h//3:
+            if end-start <= 1:
                 start = x
                 continue
             img_box = img_line[:, start:end]
