@@ -96,6 +96,8 @@ for l, img_line in enumerate(img_lines, 1):
             if end-start <= 1:
                 start = x
                 continue
+            if end-start < h/3:
+                continue
             img_box = img_line[:, start:end]
             img_boxes.append(img_box)
             start = x
