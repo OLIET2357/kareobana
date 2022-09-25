@@ -69,13 +69,8 @@ def main():
                 im = Image.new(mode='L', size=(28, 28), color=0)
                 draw = ImageDraw.Draw(im)
                 draw.text(xy=xy, text=s, font=font, fill=255)
-                os.makedirs(r'D:\Downloads\dataset\cp932_hex\%d' %
-                            i, exist_ok=True)
-
-                im.save(r'D:\Downloads\dataset\cp932_hex\%d\%s.png' %
-                       (i, FONT))
-                # im.save(r'D:\Downloads\dataset\cp932_test\%d_%s.png' %
-                #         (i, FONT))  # test
+                os.makedirs('dataset/cp932_hex/%d' % i, exist_ok=True)
+                im.save('dataset/cp932_hex/%d/%s.png' % (i, FONT))
             except UnicodeDecodeError:
                 pass
 
