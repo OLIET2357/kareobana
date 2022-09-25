@@ -38,11 +38,17 @@ parser = argparse.ArgumentParser(description='tesseract ocr test')
 parser.add_argument('image', help='image path')
 parser.add_argument('-d', '--debug', action='store_true',
                     help='save debug images')
+parser.add_argument('-i', '--inverse', action='store_true',
+                    help='specify when background is black')
+parser.add_argument('-r', '--ranking', action='store_true',
+                    help='show character ranking')
 
 args = parser.parse_args()
 
 IMAGE_PATH = args.image
 DEBUG = args.debug
+INVERSE = args.inverse
+RANKING = args.ranking
 
 if DEBUG:
     os.makedirs(DEBUG_IMAGES_DIR, exist_ok=True)
@@ -69,6 +75,8 @@ res = tool.image_to_string(Image.open(IMAGE_PATH),
 
 # draw result
 img = cv2.imread(IMAGE_PATH, cv2.IMREAD_GRAYSCALE)
+if INVERSE:
+    img = cv2.bitwise_not(img)
 img_out = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 img_lines = []
 for i, d in enumerate(res, 1):
@@ -83,7 +91,7 @@ for i, d in enumerate(res, 1):
                     'line_%d.png' % i), img_crop)
 
 model = tf.keras.models.load_model(
-    r"D:\Downloads\cp932_chars\test.files\hex_100\saved_model")
+    r"D:\Projects\kareobana\cnn_2byte.files\hex_100\saved_model")
 
 for l, img_line in enumerate(img_lines, 1):
     h, w = img_line.shape
@@ -107,27 +115,34 @@ for l, img_line in enumerate(img_lines, 1):
             cv2.imwrite(os.path.join(DEBUG_IMAGES_DIR,
                                      'char_%d_%d.png' % (l, c)), img_box)
 
-        img = cv2.copyMakeBorder(
-            img_box, 0, 0, 0, img_box.shape[0]-img_box.shape[1], cv2.BORDER_CONSTANT, value=255)
+        if img_box.shape[0] > img_box.shape[1]:
+            img = cv2.copyMakeBorder(
+                img_box, 0, 0, 0, img_box.shape[0]-img_box.shape[1], cv2.BORDER_CONSTANT, value=255)
+        else:
+            img = img_box
         # cv2.imshow(str(c), img)
         img = cv2.bitwise_not(img)
         img = cv2.resize(img, (28, 28))
 
         X = (img.astype(np.float32)/255).reshape(1, 1, 28, 28)
         y = model(Input=X)
-        # kuten = np.argmax(y)
         ss = []
-        for h in np.argsort(y[0][0])[-10:]:
+        for h in reversed(np.argsort(y[0][0])[-10:]):
             if h < 0x100:
                 bs = [h]
             else:
                 bs = [h//0x100, h % 0x100]
             s = bytearray(bs).decode('cp932')
             ss.append(s)
-        print(ss)
 
-    #     print(s, end='')
-    # print()
+        if RANKING:
+            print(l, c, ss)
+        else:
+            s = ss[0]
+            print(s, end='')
+
+    if not RANKING:
+        print()
 
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
