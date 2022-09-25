@@ -83,7 +83,7 @@ for i, d in enumerate(res, 1):
                     'line_%d.png' % i), img_crop)
 
 model = tf.keras.models.load_model(
-    r"D:\Downloads\cnn\saved_model_kuten_1000")
+    r"D:\Downloads\cp932_chars\test.files\hex_100\saved_model")
 
 for l, img_line in enumerate(img_lines, 1):
     h, w = img_line.shape
@@ -115,9 +115,12 @@ for l, img_line in enumerate(img_lines, 1):
         y = model(Input=X)
         # kuten = np.argmax(y)
         ss = []
-        for kuten in np.argsort(y[0][0])[-10:]:
-            k, t = kuten//100, kuten % 100
-            s = bytearray([s1(k, t), s2(k, t)]).decode('cp932')
+        for h in np.argsort(y[0][0])[-10:]:
+            if h < 0x100:
+                bs = [h]
+            else:
+                bs = [h//0x100, h % 0x100]
+            s = bytearray(bs).decode('cp932')
             ss.append(s)
         print(ss)
 
