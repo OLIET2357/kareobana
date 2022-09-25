@@ -14,8 +14,6 @@ import os
 
 DEBUG_IMAGES_DIR = 'debug_images'
 
-os.makedirs(DEBUG_IMAGES_DIR, exist_ok=True)
-
 # https://ja.wikipedia.org/wiki/Shift_JIS#%E5%8C%BA%E7%82%B9%E7%95%AA%E5%8F%B7%E3%81%8B%E3%82%89%E3%81%AE%E5%A4%89%E6%8F%9B
 
 
@@ -45,6 +43,9 @@ args = parser.parse_args()
 
 IMAGE_PATH = args.image
 DEBUG = args.debug
+
+if DEBUG:
+    os.makedirs(DEBUG_IMAGES_DIR, exist_ok=True)
 
 TESSERACT_PATH = r'C:\Program Files\Tesseract-OCR'  # インストールしたTesseract-OCRのpath
 TESSDATA_PATH = r'C:\Program Files\Tesseract-OCR\tessdata'  # tessdataのpath
