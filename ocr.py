@@ -90,8 +90,7 @@ for i, d in enumerate(res, 1):
         cv2.imwrite(os.path.join(DEBUG_IMAGES_DIR,
                     'line_%d.png' % i), img_crop)
 
-model = tf.keras.models.load_model(
-    r"D:\Projects\kareobana\cnn_2byte.files\hex_100\saved_model")
+model = tf.keras.models.load_model("saved_model")
 
 for l, img_line in enumerate(img_lines, 1):
     h, w = img_line.shape
