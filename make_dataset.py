@@ -44,9 +44,10 @@ def get_chars():
 def main():
     chars = get_chars()
 
-    for FONT in ('meiryo', 'msmincho', 'msgothic'):
-        font_file = r"C:\Windows\Fonts\%s.ttc" % FONT
+    FONTS = ('meiryo', 'msmincho', 'msgothic')
 
+    for FONT in FONTS:
+        font_file = r"C:\Windows\Fonts\%s.ttc" % FONT
         if FONT == 'meiryo':
             font_size = 32
         elif FONT == 'msmincho':
@@ -73,6 +74,12 @@ def main():
                 im.save('dataset/cp932_hex/%d/%s.png' % (i, FONT))
             except UnicodeDecodeError:
                 pass
+
+    with open('dataset/train.csv', 'w') as f:
+        print('x:in,y:out', file=f)
+        for d in os.listdir('dataset/cp932_hex'):
+            for FONT in FONTS:
+                print('./cp932_hex/%s/%s.png,%s' % (d, FONT, d), file=f)
 
 
 if __name__ == '__main__':
