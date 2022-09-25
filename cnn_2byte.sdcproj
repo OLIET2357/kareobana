@@ -354,11 +354,11 @@ Num=2
 MainIndex=0
 [Dataset_0]
 Name=Training
-URI=
+URI=D:\Projects\kareobana\dataset\train.csv
 Shuffle=1
 EnableCache=0
 ImageNormalization=1
-NumData=0
+NumData=22482
 [Dataset_1]
 Name=Validation
 URI=
@@ -369,7 +369,7 @@ NumData=0
 [Description]
 Text=
 [Config]
-MaxEpoch=100
+MaxEpoch=1000
 SaveBest=1
 BatchSize=64
 TypeConfig=Float
