@@ -83,7 +83,7 @@ for i, d in enumerate(res, 1):
                     'line_%d.png' % i), img_crop)
 
 model = tf.keras.models.load_model(
-    r"D:\Downloads\cp932_chars\test.files\hex_100\saved_model")
+    r"D:\Downloads\cp932_chars\test.files\hex_1000\saved_model")
 
 for l, img_line in enumerate(img_lines, 1):
     h, w = img_line.shape
