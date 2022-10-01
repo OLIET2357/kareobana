@@ -8,6 +8,8 @@ UTF-8 の文章を Shift-JIS で解釈して（糸編の漢字が多い）文字
 
 現状精度はまちまちいまいちですが、全部を手動で検索・入力するよりはマシです。
 
+[文字化け画像の直し方 – OLIETの自由帳](https://blog.oliet.tech/?p=11)
+
 # Usage
 
 [Releases](https://github.com/OLIET2357/kareobana/releases)から Tensorflow の saved_model をダウンロードしてルートディレクトリに置きます。
@@ -24,4 +26,4 @@ UTF-8 の文章を Shift-JIS で解釈して（糸編の漢字が多い）文字
 
 - **リファクタリング**
 - フォントとエポックを増やし精度を向上させる
-- 手動復元補助表計算ファイルを作る
+- ~~手動復元補助表計算ファイルを作る~~
