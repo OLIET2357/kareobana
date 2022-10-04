@@ -1,5 +1,7 @@
 # kareobana
 
+> 化物の正体見たり枯れ尾花 - 横井也有
+
 文字化け復元**支援**ツール「枯れ尾花」です。
 
 UTF-8 の文章を Shift-JIS で解釈して（糸編の漢字が多い）文字化けしたスクリーンショットを全手動で復元する機会が多かったので、少しでも自動化しました。
@@ -8,11 +10,13 @@ UTF-8 の文章を Shift-JIS で解釈して（糸編の漢字が多い）文字
 
 現状精度はまちまちいまいちですが、全部を手動で検索・入力するよりはマシです。
 
+文字列に戻ったり戻らなかったりしたらこの記事を参考に手動で復元を試みてください。
+
 [文字化け画像の直し方 – OLIETの自由帳](https://blog.oliet.tech/?p=11)
 
 # Usage
 
-[Releases](https://github.com/OLIET2357/kareobana/releases)から Tensorflow の saved_model をダウンロードしてルートディレクトリに置きます。
+[Releases](https://github.com/OLIET2357/kareobana/releases)から Tensorflow の saved_model をダウンロードして解凍したものをルートディレクトリに置きます。
 
 `python ocr.py [スクリーンショットのパス]` で認識した文字列が表示されます。
 
